@@ -45,7 +45,14 @@ export const createNote = async (req, res) => {
 
 export const getOneNote =  async (req, res) => {
     try{
-        const note = Note.findById(req.params.id);
+        const note = await Note.findById(req.params.id);
+        if(!note){ 
+            return res.status(404).json({
+                message: "Note not found",
+                data: {},
+                success: true
+            });
+        }
         res.status(201).json({
             message: "Fetched note successfully",
             data: {
@@ -68,8 +75,16 @@ export const getOneNote =  async (req, res) => {
 export const updateNote =  async (req, res) => {
     try{
         const {title, content} = req.body;
-        const updatedNote = await Note.findByIdAndUpdate(req.params.id, {title: title, content: content});
-        res.status(204).json({
+        const updatedNote = await Note.findByIdAndUpdate(req.params.id, {title: title, content: content}, {new:true});
+        if (!updatedNote){
+            return res.status(404).json({
+                message: "Note not found",
+                data: {},
+                success: true
+            });
+        };
+
+        return res.status(200).json({
             message: "Note updated Successfully",
             data: {
                 "note": updatedNote
@@ -78,7 +93,7 @@ export const updateNote =  async (req, res) => {
         });
     }catch(error){
         console.error(`Error in updateNote controller ${error}`);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error",
             data: {},
             success: false
@@ -89,7 +104,14 @@ export const updateNote =  async (req, res) => {
 export const deleteNote = async (req, res) => {
     try{
         const deletedNote = await Note.findByIdAndDelete(req.params.id);
-        res.status(204).json({
+        if(!deletedNote){
+            return res.status(404).json({
+                message: "Note not found",
+                data: {},
+                success: true
+            });
+        }
+        res.status(200).json({
             message: "Note deleted Successfully",
             data: {
                 "note": deletedNote
