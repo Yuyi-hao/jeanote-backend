@@ -3,6 +3,7 @@ import notesRoutes from "./routes/notesRoutes.js";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
 import ratelimiter from "./middleware/ratelimiter.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -13,6 +14,9 @@ const app = express();
 // middleware
 app.use(express.json()); // middle ware parse json data
 app.use(ratelimiter);
+app.use(cors({
+    origin: ["http://localhost:5173",]
+}));
 app.use((req, res, next) => {
     console.log(`[${req.method}] ${req.url}  response:[${res.statusCode}] request`);
     next();
